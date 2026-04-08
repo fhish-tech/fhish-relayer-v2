@@ -8,9 +8,9 @@ export class RelayerEngine {
   private readonly maxRetries: number;
   private readonly retryDelayMs: number;
 
-  constructor(gatewayUrl: string) {
+  constructor(gatewayUrl: string, signer?: ethers.Signer, gatewayContractAddress?: string) {
     this.gatewayUrl = gatewayUrl;
-    this.kms = new KMSClient(gatewayUrl);
+    this.kms = new KMSClient(gatewayUrl, signer, gatewayContractAddress);
     this.maxRetries = 3;
     this.retryDelayMs = 2000;
     console.log(`[RelayerEngine] Created with gatewayUrl=${gatewayUrl}, retries=${this.maxRetries}, delay=${this.retryDelayMs}ms`);

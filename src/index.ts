@@ -6,12 +6,14 @@ import { startListener } from "./listener.js";
 import { createResponder } from "./responder.js";
 
 const GATEWAY_ABI = [
+  "event CiphertextSubmitted(bytes32 indexed handle, uint256 size, address submitter)",
   "event PublicDecryptionRequest(uint256 indexed decryptionId, bytes32[] ctHandles, bytes extraData)",
   "event PublicDecryptionResponse(uint256 indexed decryptionId, bytes decryptedResult, bytes[] signatures, bytes extraData)",
   "function fulfillPublicDecryption(uint256 decryptionId, bytes decryptedResult, bytes[] signatures) external",
   "function fulfillPublicDecryptionNoVerify(uint256 decryptionId, bytes decryptedResult) external",
   "function isDecryptionDone(uint256 decryptionId) external view returns (bool)",
-  "function requestDecryption(uint256[] calldata ctsHandles, bytes4 callbackSelector, uint256 msgValue, uint256 maxTimestamp, bool passSignaturesToCaller) external returns (uint256)"
+  "function requestDecryption(uint256[] calldata ctsHandles, bytes4 callbackSelector, uint256 msgValue, uint256 maxTimestamp, bool passSignaturesToCaller) external returns (uint256)",
+  "function getCiphertext(bytes32 handle) external view returns (bytes memory ciphertext)"
 ] as const;
 
 async function main() {
@@ -42,7 +44,7 @@ async function main() {
   console.log(`╚══════════════════════════════════════════════╝`);
 
   console.log("[RELAYER] Creating RelayerEngine...");
-  const engine = new RelayerEngine(gatewayUrl);
+  const engine = new RelayerEngine(gatewayUrl, signer, gatewayAddress);
   console.log("[RELAYER] Calling engine.init()...");
   await engine.init();
 
