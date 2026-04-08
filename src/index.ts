@@ -20,35 +20,52 @@ async function main() {
   const gatewayAddress = process.env.GATEWAY_ADDRESS;
   const gatewayUrl = process.env.GATEWAY_URL || "http://localhost:8080";
 
+  console.log("[RELAYER] Starting FHISH Relayer v2...");
+  console.log("[RELAYER] Checking env vars...");
+
   if (!privateKey) throw new Error("PRIVATE_KEY not set");
   if (!rpcUrl) throw new Error("RPC_URL not set");
   if (!gatewayAddress) throw new Error("GATEWAY_ADDRESS not set");
+
+  console.log("[RELAYER] ✓ All required env vars present");
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const signer = new ethers.Wallet(privateKey, provider);
   const gateway = new ethers.Contract(gatewayAddress, GATEWAY_ABI, signer);
 
-  console.log(`FHISH Relayer v2 starting:
-  Gateway contract: ${gatewayAddress}
-  Relayer address:  ${signer.address}
-  Gateway URL:      ${gatewayUrl}
-  RPC:             ${rpcUrl}
-  `);
+  console.log(`╔══════════════════════════════════════════════╗`);
+  console.log(`║         FHISH RELAYER v2 RUNNING ★       ║`);
+  console.log(`║  Gateway contract: ${gatewayAddress.padEnd(26)}║`);
+  console.log(`║  Relayer address:  ${signer.address.padEnd(26)}║`);
+  console.log(`║  Gateway URL:      ${gatewayUrl.padEnd(26)}║`);
+  console.log(`║  RPC:             ${rpcUrl.slice(0, 26).padEnd(26)}║`);
+  console.log(`╚══════════════════════════════════════════════╝`);
 
+  console.log("[RELAYER] Creating RelayerEngine...");
   const engine = new RelayerEngine(gatewayUrl);
+  console.log("[RELAYER] Calling engine.init()...");
   await engine.init();
 
+  console.log("[RELAYER] Creating responder...");
   const responder = createResponder(gateway, signer);
 
+  console.log("[RELAYER] Starting event listener...");
   await startListener(gateway, engine, responder);
 
   const app = express();
-  app.get("/health", (_req, res) => res.json({ status: "ok", relayer: signer.address }));
+  app.get("/health", (_req, res) => {
+    res.json({ status: "ok", relayer: signer.address, uptime: process.uptime() });
+  });
   const port = parseInt(process.env.HEALTH_PORT || "3001", 10);
-  app.listen(port, () => console.log(`Health server on port ${port}`));
+  app.listen(port, () => {
+    console.log(`╔══════════════════════════════════════════════╗`);
+    console.log(`║  Health server listening on port ${String(port).padEnd(18)}║`);
+    console.log(`╚══════════════════════════════════════════════╝`);
+  });
 }
 
 main().catch((err) => {
-  console.error("Fatal:", err);
+  console.error("[RELAYER] FATAL:", err.message);
+  console.error("[RELAYER] Stack:", err.stack);
   process.exit(1);
 });
