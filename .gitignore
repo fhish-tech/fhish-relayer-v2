@@ -1,8 +1,28 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+*.tsbuildinfo
+
+# Environment (NEVER commit real secrets)
 .env
 .env.local
 .env.*.local
-coverage/
+
+# Docker
+.dockerignore
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
