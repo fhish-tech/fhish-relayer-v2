@@ -192,7 +192,7 @@ async function main() {
       if (isAdmin && totalVotes > 0) {
         console.log(`[RELAYER] Attempting to update on-chain results...`);
         try {
-          const tx = await (voting.setDecryptedResult as any)(yesVotes, noVotes, { gasLimit: 100000 });
+          const tx = await (voting.setDecryptedResult as any)(yesVotes, noVotes, { gasLimit: 500000 });
           await tx.wait();
           console.log(`[RELAYER] ★ setDecryptedResult(${yesVotes}, ${noVotes}) confirmed`);
         } catch (err: any) {
