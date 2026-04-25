@@ -84,7 +84,7 @@ async function main() {
       },
       body: JSON.stringify({ 
         ciphertext: ctData.ciphertext, 
-        type: "uint32" 
+        type: "FhisShortint" 
       })
     });
 
